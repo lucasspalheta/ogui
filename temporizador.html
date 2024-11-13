@@ -1,0 +1,139 @@
+<!DOCTYPE html>  
+<html lang="pt-BR">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>Temporizador</title>  
+    <style>  
+        body {  
+            font-family: Arial, sans-serif;  
+            display: flex;  
+            flex-direction: column;  
+            align-items: center;  
+            justify-content: center;  
+            height: 100vh;  
+            background-color: #f4f4f4;  
+            margin: 0;  
+        }  
+        #timer {  
+            font-size: 48px;  
+            margin-bottom: 20px;  
+            background-color: #007bff;  
+            color: white;  
+            padding: 20px;  
+            border-radius: 10px;  
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);  
+            transition: background-color 0.5s; /* Transição suave para a mudança de cor */  
+            cursor: pointer; /* Indica que o quadrado pode ser clicado */  
+            width: 150px;  
+            text-align: center; /* Centraliza o texto */  
+        }  
+        #controls {  
+            display: flex;  
+            gap: 10px;  
+            margin-top: 20px; /* Margem superior para os botões */  
+            align-items: center; /* Alinha verticalmente os botões */  
+        }  
+        button {  
+            padding: 10px 20px;  
+            border: none;  
+            border-radius: 5px;  
+            color: white;  
+            font-size: 16px;  
+            background-color: #007bff; /* Cor ativa */  
+            cursor: pointer;  
+            transition: background-color 0.3s;  
+        }  
+        button:hover {  
+            background-color: #0056b3;  
+        }  
+        button:active {  
+            background-color: #004494;  
+        }  
+        input[type="text"] {  
+            font-size: 48px;  
+            text-align: center;  
+            border: none;  
+            background: none;  
+            color: white;  
+            width: 150px;  
+            outline: none; /* Remove a borda ao focar */  
+        }  
+    </style>  
+</head>  
+<body>  
+
+    <div id="timer" onclick="editTimer()">00:00</div>  
+    <div id="controls">  
+        <button onclick="startTimer()">Iniciar</button>  
+        <button onclick="pauseTimer()">Pausar</button>  
+        <button onclick="stopTimer()">Parar</button>  
+    </div>  
+
+    <script>  
+        let countdown;  
+        let totalTime = 0;  
+        let isPaused = false;  
+        let isEditing = false;  
+
+        function startTimer() {  
+            if (!isPaused && totalTime > 0) {  
+                countdown = setInterval(() => {  
+                    if (totalTime > 0) {  
+                        totalTime--;  
+                        updateTimerDisplay(totalTime);  
+                    } else {  
+                        clearInterval(countdown);  
+                        document.getElementById('timer').style.backgroundColor = 'red'; // Muda a cor para vermelho  
+                    }  
+                }, 1000);  
+            }  
+            isPaused = false;  
+        }  
+
+        function pauseTimer() {  
+            clearInterval(countdown);  
+            isPaused = true;  
+        }  
+
+        function stopTimer() {  
+            clearInterval(countdown);  
+            totalTime = 0;  
+            updateTimerDisplay(totalTime);  
+            document.getElementById('timer').style.backgroundColor = '#007bff'; // Reseta a cor do timer  
+            isPaused = false;  
+            isEditing = false; // Reseta o modo de edição  
+        }  
+
+        function updateTimerDisplay(time) {  
+            const minutes = Math.floor(time / 60);  
+            const seconds = time % 60;  
+            document.getElementById('timer').innerText =  
+                String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');  
+        }  
+
+        function editTimer() {  
+            if (!isEditing) {  
+                isEditing = true;  
+                const timerDiv = document.getElementById('timer');  
+                const currentTime = timerDiv.innerText.split(':');  
+                const inputField = document.createElement('input');  
+                inputField.type = 'text';  
+                inputField.value = timerDiv.innerText;  
+                inputField.onblur = () => {  
+                    const [minutes, seconds] = inputField.value.split(':').map(num => parseInt(num, 10));  
+                    totalTime = (minutes || 0) * 60 + (seconds || 0);  
+                    updateTimerDisplay(totalTime);  
+                    timerDiv.innerHTML = inputField.value; // Atualiza o temporizador com o novo valor  
+                    timerDiv.style.backgroundColor = '#007bff'; // Reseta a cor do timer  
+                    isEditing = false; // Sai do modo de edição  
+                };  
+                timerDiv.innerHTML = ''; // Limpa o conteúdo do temporizador  
+                timerDiv.appendChild(inputField); // Adiciona o campo de entrada  
+                inputField.focus(); // Foca no campo de entrada  
+            }  
+        }  
+    </script>  
+
+</body>  
+</html>
